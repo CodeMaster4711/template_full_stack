@@ -1,0 +1,1 @@
+# template_full_stack
