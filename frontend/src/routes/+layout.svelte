@@ -11,6 +11,11 @@
 
   onMount(() => {
     authStore.init(data.user ?? null, data.token ?? null);
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = (dark: boolean) => document.documentElement.classList.toggle('dark', dark);
+    apply(mediaQuery.matches);
+    mediaQuery.addEventListener('change', (e) => apply(e.matches));
   });
 
   $effect(() => {
