@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://app:app@postgres:5432/app
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      RATE_LIMIT_PER_SECOND: ${RATE_LIMIT_PER_SECOND:-100}
+      RATE_LIMIT_BURST: ${RATE_LIMIT_BURST:-200}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:1420}
+      RUST_LOG: ${RUST_LOG:-info}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+        BACKEND_URL: http://backend:8000
+    restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      BACKEND_URL: http://backend:8000
+    ports:
+      - "1420:1420"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

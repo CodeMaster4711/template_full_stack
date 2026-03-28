@@ -11,6 +11,12 @@ export default defineConfig({
     hmr: {
       protocol: 'ws',
       port: 1420
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      }
     }
   },
   preview: {

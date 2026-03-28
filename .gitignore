@@ -1,2 +1,27 @@
-node_modules
+# Dependencies
+node_modules/
 package-lock.json
+
+# Frontend
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/build/
+frontend/.env
+frontend/package-lock.json
+
+# Backend
+backend/target/
+backend/.env
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
